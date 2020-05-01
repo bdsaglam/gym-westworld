@@ -9,7 +9,10 @@ setup(
         'gym>=0.9.0',
         'numpy>=1.10.0',
         'pyglet',
-        #'pyyaml>=3.12',
+        # 'pyyaml>=3.12',
         # 'pybullet>=2.1.0',
-    ]
+    ],
+    package_data={
+        'gym_miniworld': ['meshes/*', 'textures/*', 'textures/chars/*'],
+    }
 )

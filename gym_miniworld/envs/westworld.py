@@ -24,7 +24,8 @@ class WestWorld(MiniWorldEnv):
 
     def __init__(
             self,
-            random_instance=None,
+            room_size=3,
+            gap_size=0.25,
             max_episode_steps=None,
             seed=None,
             **kwargs
@@ -32,12 +33,12 @@ class WestWorld(MiniWorldEnv):
 
         self.num_rows = 6
         self.num_cols = 6
-        self.room_size = 5
-        self.gap_size = 0.25
+        self.room_size = room_size
+        self.gap_size = gap_size
         self.M = None
 
         super().__init__(
-            max_episode_steps=max_episode_steps or self.num_rows * self.num_cols * 24,
+            max_episode_steps=max_episode_steps or self.num_rows * self.num_cols * self.room_size,
             seed=seed,
             **kwargs
         )

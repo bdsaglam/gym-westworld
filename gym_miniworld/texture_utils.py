@@ -1,8 +1,5 @@
 from gym_miniworld.params import *
 
-# Default wall height for room
-DEFAULT_WALL_HEIGHT = 2.74
-
 # Texture size/density in texels/meter
 TEX_DENSITY = 512
 

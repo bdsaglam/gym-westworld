@@ -27,7 +27,7 @@ seed = 0
 random.seed(seed)
 np.random.seed(seed)
 
-env = gym.make(args.env_name, seed=seed)
+env = gym.make(args.env_name, seed=seed, num_chars_on_wall=1)
 
 if args.no_time_limit:
     env.max_episode_steps = math.inf

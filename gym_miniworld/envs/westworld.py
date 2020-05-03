@@ -24,10 +24,12 @@ class WestWorld(MiniWorldEnv):
 
     def __init__(
             self,
+            seed=None,
             room_size=3,
             gap_size=0.25,
             max_episode_steps=None,
-            seed=None,
+            wall_decore_height=None,
+            num_chars_on_wall=1,
             **kwargs
     ):
 
@@ -35,11 +37,14 @@ class WestWorld(MiniWorldEnv):
         self.num_cols = 6
         self.room_size = room_size
         self.gap_size = gap_size
+        self.wall_decore_height = wall_decore_height
+        self.num_chars_on_wall = num_chars_on_wall
+
         self.M = None
 
         super().__init__(
-            max_episode_steps=max_episode_steps or self.num_rows * self.num_cols * self.room_size,
             seed=seed,
+            max_episode_steps=max_episode_steps or self.num_rows * self.num_cols * self.room_size,
             **kwargs
         )
 
@@ -259,10 +264,11 @@ class WestWorld(MiniWorldEnv):
 
     def decorate_room(self, room, *walls):
         y = room.wall_height / 2
+        height = self.wall_decore_height or room.wall_height / self.num_chars_on_wall
         for wall in walls:
             x, z = wall_center_xz(room, wall)
-            text = ''.join(self.rand.subset(CHARACTERS, k=3))
-            entity = TextFrame(pos=(0, 0), dir=0, str=text, height=1)
+            text = ''.join(self.rand.subset(CHARACTERS, k=self.num_chars_on_wall))
+            entity = TextFrame(pos=(0, 0), dir=0, str=text, height=height)
             # entity = ImageFrame(pos=(0, 0),
             #                     dir=0,
             #                    tex_name='portraits/' + self.rand.choice(PORTRAIT_NAMES),

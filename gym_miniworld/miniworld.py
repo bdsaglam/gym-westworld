@@ -42,6 +42,7 @@ class MiniWorldEnv(gym.Env):
 
     def __init__(
             self,
+            seed=None,
             max_episode_steps=1500,
             obs_width=160,
             obs_height=160,
@@ -49,7 +50,6 @@ class MiniWorldEnv(gym.Env):
             window_height=600,
             params=DEFAULT_PARAMS,
             domain_rand=False,
-            seed=None
     ):
         # Action enumeration for this environment
         self.actions = MiniWorldEnv.Actions
@@ -460,7 +460,7 @@ class MiniWorldEnv(gym.Env):
         """
 
         assert len(self.rooms) > 0, "create rooms before calling place_entity"
-        assert ent.radius != None, "entity must have physical size defined"
+        assert ent.radius is not None, "entity must have physical size defined"
 
         # Generate collision detection data
         if len(self.wall_segs) == 0:
@@ -468,7 +468,7 @@ class MiniWorldEnv(gym.Env):
 
         # If an exact position if specified
         if pos is not None:
-            ent.dir = dir if dir != None else self.rand.float(-math.pi, math.pi)
+            ent.dir = dir if dir is not None else self.rand.float(-math.pi, math.pi)
             ent.pos = pos
             self.entities.append(ent)
             return ent
@@ -479,10 +479,10 @@ class MiniWorldEnv(gym.Env):
             r = room if room else self.rand.choice(self.rooms, probs=self.room_probs)
 
             # Choose a random point within the square bounding box of the room
-            lx = r.min_x if min_x == None else min_x
-            hx = r.max_x if max_x == None else max_x
-            lz = r.min_z if min_z == None else min_z
-            hz = r.max_z if max_z == None else max_z
+            lx = r.min_x if min_x is None else min_x
+            hx = r.max_x if max_x is None else max_x
+            lz = r.min_z if min_z is None else min_z
+            hz = r.max_z if max_z is None else max_z
             pos = self.rand.float(
                 low=[lx + ent.radius, 0, lz + ent.radius],
                 high=[hx - ent.radius, 0, hz - ent.radius]
@@ -497,7 +497,7 @@ class MiniWorldEnv(gym.Env):
                 continue
 
             # Pick a direction
-            d = dir if dir != None else self.rand.float(-math.pi, math.pi)
+            d = dir if dir is not None else self.rand.float(-math.pi, math.pi)
 
             ent.pos = pos
             ent.dir = d
@@ -565,7 +565,7 @@ class MiniWorldEnv(gym.Env):
         Used for "go to" or "put next" type tasks
         """
 
-        if ent1 == None:
+        if ent1 is None:
             ent1 = self.agent
 
         dist = np.linalg.norm(ent0.pos - ent1.pos)
@@ -756,7 +756,7 @@ class MiniWorldEnv(gym.Env):
         Render an observation from the point of view of the agent
         """
 
-        if frame_buffer == None:
+        if frame_buffer is None:
             frame_buffer = self.obs_fb
 
         # Switch to the default OpenGL context
@@ -805,7 +805,7 @@ class MiniWorldEnv(gym.Env):
         Distances are in meters from the observer
         """
 
-        if frame_buffer == None:
+        if frame_buffer is None:
             frame_buffer = self.obs_fb
 
         # Render the world

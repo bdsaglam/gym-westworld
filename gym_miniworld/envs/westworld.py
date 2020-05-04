@@ -40,16 +40,18 @@ class WestWorld(MiniWorldEnv):
         self.wall_decore_height = wall_decore_height
         self.num_chars_on_wall = num_chars_on_wall
 
+        # Allow only the movement actions
+        self.action_space = spaces.Discrete(self.actions.move_forward + 1)
+
         self.M = None
 
         super().__init__(
             seed=seed,
-            max_episode_steps=max_episode_steps or self.num_rows * self.num_cols * self.room_size,
+            max_episode_steps=max_episode_steps or self.num_rows * self.num_cols * self.room_size * self.action_space.n,
             **kwargs
         )
 
-        # Allow only the movement actions
-        self.action_space = spaces.Discrete(self.actions.move_forward + 1)
+
 
     def _reset(self):
         self.place_agent()

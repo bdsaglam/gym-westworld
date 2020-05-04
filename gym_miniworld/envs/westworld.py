@@ -27,7 +27,6 @@ class WestWorld(MiniWorldEnv):
             seed=None,
             room_size=3,
             gap_size=0.25,
-            max_episode_steps=None,
             wall_decore_height=None,
             num_chars_on_wall=1,
             **kwargs
@@ -39,19 +38,15 @@ class WestWorld(MiniWorldEnv):
         self.gap_size = gap_size
         self.wall_decore_height = wall_decore_height
         self.num_chars_on_wall = num_chars_on_wall
-
-        # Allow only the movement actions
-        self.action_space = spaces.Discrete(self.actions.move_forward + 1)
-
         self.M = None
 
         super().__init__(
             seed=seed,
-            max_episode_steps=max_episode_steps or self.num_rows * self.num_cols * self.room_size * self.action_space.n,
             **kwargs
         )
 
-
+        # Allow only the movement actions
+        self.action_space = spaces.Discrete(self.actions.move_forward + 1)
 
     def _reset(self):
         self.place_agent()

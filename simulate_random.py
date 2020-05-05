@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 import torch
+from gym.wrappers import Monitor
 
 from gym_miniworld.envs import WestWorld
 
@@ -11,18 +12,17 @@ def simulate(
         env,
         agent,
         deterministic=True,
-        num_episodes=5,
-        episode_len_limit=None,
+        num_episodes=3,
         render=True,
         wait_after_render=1e-3,
-        render_kwargs=None
+        render_kwargs=None,
+        record_video=False
 ):
     render_kwargs = render_kwargs or dict()
-    if episode_len_limit is None:
-        if env.unwrapped.spec and env.unwrapped.spec.max_episode_steps:
-            episode_len_limit = env.spec.max_episode_steps
-        else:
-            raise ValueError("Episode length limit must be specified")
+
+    assert env.max_episode_steps > 0
+    if record_video:
+        env = Monitor(env, directory='./data')
 
     episode_info = []
     for _ in range(num_episodes):
@@ -31,7 +31,7 @@ def simulate(
         done = False
         episode_return = 0
         t = 0
-        while not done and t != episode_len_limit:
+        while not done:
             if render:
                 env.render(**render_kwargs)
                 time.sleep(wait_after_render)
@@ -42,6 +42,8 @@ def simulate(
             episode_return += reward
             t += 1
         episode_info.append((t, episode_return))
+
+    env.close()
 
     return episode_info
 
@@ -66,12 +68,13 @@ if __name__ == '__main__':
         seed=seed,
         obs_width=200,
         obs_height=200,
+        max_episode_steps=200
     )
     agent = RandomAgent(env.action_space)
     simulate(
         env,
         agent,
-        episode_len_limit=1000,
         render=True,
         render_kwargs=dict(mode='human', view='top'),
+        record_video=True
     )

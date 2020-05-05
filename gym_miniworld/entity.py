@@ -514,7 +514,7 @@ class Agent(Entity):
         p1 = p + 0.75 * (rv - dv)
         p2 = p + 0.75 * (-rv - dv)
 
-        glColor3f(1, 0, 0)
+        glColor3f(0, 255, 0)
         glBegin(GL_TRIANGLES)
         glVertex3f(*p0)
         glVertex3f(*p2)

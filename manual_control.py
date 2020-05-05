@@ -11,6 +11,8 @@ import random
 import sys
 
 import gym
+from gym.wrappers import Monitor
+
 import gym_miniworld.envs
 import numpy as np
 import pyglet
@@ -28,6 +30,7 @@ random.seed(seed)
 np.random.seed(seed)
 
 env = gym.make(args.env_name, seed=seed, num_chars_on_wall=1)
+env = Monitor(env, directory='./data')
 
 if args.no_time_limit:
     env.max_episode_steps = math.inf

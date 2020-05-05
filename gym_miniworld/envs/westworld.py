@@ -2,6 +2,7 @@ import string
 
 import numpy as np
 from gym import spaces
+from gym.envs.registration import EnvSpec
 
 from gym_miniworld.entity import Box
 from gym_miniworld.miniworld import MiniWorldEnv, TextFrame, MeshEnt
@@ -44,6 +45,13 @@ class WestWorld(MiniWorldEnv):
             seed=seed,
             **kwargs
         )
+
+        self.spec = EnvSpec(id="WestWorld-v1",
+                            entry_point=None,
+                            reward_threshold=None,
+                            nondeterministic=False,
+                            max_episode_steps=self.max_episode_steps,
+                            kwargs=None)
 
         # Allow only the movement actions
         self.action_space = spaces.Discrete(self.actions.move_forward + 1)

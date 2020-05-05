@@ -683,7 +683,7 @@ class MiniWorldEnv(gym.Env):
         Render a top view of the whole map (from above)
         """
 
-        if frame_buffer == None:
+        if frame_buffer is None:
             frame_buffer = self.obs_fb
 
         # Switch to the default OpenGL context

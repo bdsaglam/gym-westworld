@@ -249,7 +249,7 @@ class TextFrame(Entity):
     Note: the position is in the middle of the frame, on the wall
     """
 
-    def __init__(self, pos, dir, str, height=0.15, depth=0.05):
+    def __init__(self, pos, dir, str, height=0.15, depth=0.05, inverted=False):
         super().__init__()
 
         self.pos = pos
@@ -260,19 +260,21 @@ class TextFrame(Entity):
         self.depth = depth
         self.height = height
         self.width = len(str) * height
+        self.inverted = inverted
 
     @property
     def is_static(self):
         return True
 
     def randomize(self, params, rng):
+        folder = 'neg_chars/' if self.inverted else 'chars/'
         self.texs = []
         for ch in self.str:
             try:
                 if ch == ' ':
                     self.texs.append(None)
                 else:
-                    tex_name = 'chars/ch_' + ch
+                    tex_name = folder + 'ch_' + ch
                     self.texs.append(Texture.get(tex_name, rng))
             except:
                 raise ValueError('only alphanumerical characters supported in TextFrame')

@@ -40,6 +40,7 @@ class WestWorld(MiniWorldEnv):
             decore_option: DecoreOption = DecoreOption.NONE,
             wall_decore_height=None,
             num_chars_on_wall=1,
+            invert_chars=True,
             **kwargs
     ):
 
@@ -50,6 +51,7 @@ class WestWorld(MiniWorldEnv):
         self.decore_option = decore_option
         self.wall_decore_height = wall_decore_height
         self.num_chars_on_wall = num_chars_on_wall
+        self.invert_chars = invert_chars
         self.M = None
 
         # Decoration stuff
@@ -305,7 +307,7 @@ class WestWorld(MiniWorldEnv):
             elif len(self.text_decore_set) > 0:
                 height = self.wall_decore_height or room.wall_height / self.num_chars_on_wall
                 text = ''.join(self.rand.subset(self.text_decore_set, k=self.num_chars_on_wall))
-                entity = TextFrame(pos=(0, 0), dir=0, str=text, height=height)
+                entity = TextFrame(pos=(0, 0), dir=0, str=text, height=height, inverted=self.invert_chars)
 
             if entity is not None:
                 x, z = wall_center_xz(room, wall)

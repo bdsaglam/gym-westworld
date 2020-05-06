@@ -6,6 +6,7 @@ import torch
 from gym.wrappers import Monitor
 
 from gym_miniworld.envs import WestWorld
+from gym_miniworld.envs.westworld import DecoreOption
 
 
 def simulate(
@@ -43,8 +44,6 @@ def simulate(
             t += 1
         episode_info.append((t, episode_return))
 
-    env.close()
-
     return episode_info
 
 
@@ -66,8 +65,9 @@ if __name__ == '__main__':
 
     env = WestWorld(
         seed=seed,
-        obs_width=200,
-        obs_height=200,
+        obs_width=128,
+        obs_height=128,
+        decore_option=DecoreOption.ALL,
         max_episode_steps=200
     )
     agent = RandomAgent(env.action_space)
@@ -76,5 +76,7 @@ if __name__ == '__main__':
         agent,
         render=True,
         render_kwargs=dict(mode='human', view='top'),
+        wait_after_render=0.05,
         record_video=True
     )
+    env.close()

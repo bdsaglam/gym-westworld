@@ -29,6 +29,8 @@ random.seed(seed)
 np.random.seed(seed)
 
 env = WestWorld(seed=seed,
+                obs_width=128,
+                obs_height=128,
                 decore_option=(DecoreOption.PORTRAIT | DecoreOption.DIGIT | DecoreOption.CHARACTER),
                 num_chars_on_wall=2)
 # env = Monitor(env, directory='./data')

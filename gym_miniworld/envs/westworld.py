@@ -14,9 +14,9 @@ RIGHT = 'R'
 BOTTOM = 'B'
 LEFT = 'L'
 
-PORTRAIT_NAMES = set(get_portrait_names())
-CHARACTERS = set(string.ascii_uppercase)
-DIGITS = set(string.digits)
+PORTRAIT_NAMES = list(get_portrait_names())
+CHARACTERS = list(string.ascii_uppercase)
+DIGITS = list(string.digits)
 
 
 class DecoreOption(IntFlag):
@@ -55,13 +55,13 @@ class WestWorld(MiniWorldEnv):
         self.M = None
 
         # Decoration stuff
-        self.text_decore_set = set()
+        self.text_decores = []
         if DecoreOption.DIGIT in self.decore_option:
-            self.text_decore_set.update(DIGITS)
+            self.text_decores.extend(DIGITS)
         if DecoreOption.CHARACTER in self.decore_option:
-            self.text_decore_set.update(CHARACTERS)
+            self.text_decores.extend(CHARACTERS)
 
-        self.image_decore_set = PORTRAIT_NAMES if DecoreOption.PORTRAIT in self.decore_option else set()
+        self.image_decores = PORTRAIT_NAMES if DecoreOption.PORTRAIT in self.decore_option else []
 
         super().__init__(
             seed=seed,
@@ -298,15 +298,15 @@ class WestWorld(MiniWorldEnv):
         y = room.wall_height / 2
         for wall in walls:
             entity = None
-            if len(self.image_decore_set) > 0 and self.rand.bool():
+            if len(self.image_decores) > 0 and self.rand.bool():
                 height = self.wall_decore_height or room.wall_height
                 entity = ImageFrame(pos=(0, 0),
                                     dir=0,
                                    tex_name='portraits/' + self.rand.choice(PORTRAIT_NAMES),
                                     width=height)
-            elif len(self.text_decore_set) > 0:
+            elif len(self.text_decores) > 0:
                 height = self.wall_decore_height or room.wall_height / self.num_chars_on_wall
-                text = ''.join(self.rand.subset(self.text_decore_set, k=self.num_chars_on_wall))
+                text = ''.join(self.rand.subset(self.text_decores, k=self.num_chars_on_wall))
                 entity = TextFrame(pos=(0, 0), dir=0, str=text, height=height, inverted=self.invert_chars)
 
             if entity is not None:

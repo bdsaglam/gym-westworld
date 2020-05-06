@@ -1,10 +1,11 @@
 import string
+from enum import IntFlag
 
 import numpy as np
 from gym import spaces
 from gym.envs.registration import EnvSpec
 
-from gym_miniworld.entity import Box
+from gym_miniworld.entity import Box, ImageFrame
 from gym_miniworld.miniworld import MiniWorldEnv, TextFrame, MeshEnt
 from gym_miniworld.utils import get_portrait_names
 
@@ -13,9 +14,17 @@ RIGHT = 'R'
 BOTTOM = 'B'
 LEFT = 'L'
 
-PORTRAIT_NAMES = list(get_portrait_names())
-# CHARACTERS = list(string.ascii_uppercase) + list(string.digits)
-CHARACTERS = list(string.digits)
+PORTRAIT_NAMES = set(get_portrait_names())
+CHARACTERS = set(string.ascii_uppercase)
+DIGITS = set(string.digits)
+
+
+class DecoreOption(IntFlag):
+    NONE = 0
+    DIGIT = 1
+    CHARACTER = 2
+    PORTRAIT = 4
+    ALL = 7
 
 
 class WestWorld(MiniWorldEnv):
@@ -28,6 +37,7 @@ class WestWorld(MiniWorldEnv):
             seed=None,
             room_size=3,
             gap_size=0.25,
+            decore_option: DecoreOption = DecoreOption.NONE,
             wall_decore_height=None,
             num_chars_on_wall=1,
             **kwargs
@@ -37,9 +47,19 @@ class WestWorld(MiniWorldEnv):
         self.num_cols = 6
         self.room_size = room_size
         self.gap_size = gap_size
+        self.decore_option = decore_option
         self.wall_decore_height = wall_decore_height
         self.num_chars_on_wall = num_chars_on_wall
         self.M = None
+
+        # Decoration stuff
+        self.text_decore_set = set()
+        if DecoreOption.DIGIT in self.decore_option:
+            self.text_decore_set.update(DIGITS)
+        if DecoreOption.CHARACTER in self.decore_option:
+            self.text_decore_set.update(CHARACTERS)
+
+        self.image_decore_set = PORTRAIT_NAMES if DecoreOption.PORTRAIT in self.decore_option else set()
 
         super().__init__(
             seed=seed,
@@ -55,6 +75,8 @@ class WestWorld(MiniWorldEnv):
 
         # Allow only the movement actions
         self.action_space = spaces.Discrete(self.actions.move_forward + 1)
+
+
 
     def _reset(self):
         self.place_agent()
@@ -77,9 +99,9 @@ class WestWorld(MiniWorldEnv):
 
     def create_room_matrix(self):
         wall_textures = [
-            'airduct_grate',
+            # 'airduct_grate',
             'brick_wall',
-            'cinder_blocks',
+            # 'cinder_blocks',
         ]
 
         floor_textures = []
@@ -219,6 +241,9 @@ class WestWorld(MiniWorldEnv):
                            max_x=down.max_x)
 
     def decorate(self):
+        if self.decore_option is DecoreOption.NONE:
+            return
+
         r = 0
         self.decorate_room(self.M[r][0], TOP, BOTTOM, LEFT)
         self.decorate_room(self.M[r][1], TOP)
@@ -269,21 +294,27 @@ class WestWorld(MiniWorldEnv):
 
     def decorate_room(self, room, *walls):
         y = room.wall_height / 2
-        height = self.wall_decore_height or room.wall_height / self.num_chars_on_wall
         for wall in walls:
-            x, z = wall_center_xz(room, wall)
-            text = ''.join(self.rand.subset(CHARACTERS, k=self.num_chars_on_wall))
-            entity = TextFrame(pos=(0, 0), dir=0, str=text, height=height)
-            # entity = ImageFrame(pos=(0, 0),
-            #                     dir=0,
-            #                    tex_name='portraits/' + self.rand.choice(PORTRAIT_NAMES),
-            #                     width=1)
-            self.place_entity(
-                ent=entity,
-                pos=(x, y, z),
-                dir=plane_normal(wall),
-                room=room
-            )
+            entity = None
+            if len(self.image_decore_set) > 0 and self.rand.bool():
+                height = self.wall_decore_height or room.wall_height
+                entity = ImageFrame(pos=(0, 0),
+                                    dir=0,
+                                   tex_name='portraits/' + self.rand.choice(PORTRAIT_NAMES),
+                                    width=height)
+            elif len(self.text_decore_set) > 0:
+                height = self.wall_decore_height or room.wall_height / self.num_chars_on_wall
+                text = ''.join(self.rand.subset(self.text_decore_set, k=self.num_chars_on_wall))
+                entity = TextFrame(pos=(0, 0), dir=0, str=text, height=height)
+
+            if entity is not None:
+                x, z = wall_center_xz(room, wall)
+                self.place_entity(
+                    ent=entity,
+                    pos=(x, y, z),
+                    dir=plane_normal(wall),
+                    room=room
+                )
 
     def create_buildings(self):
         maze_width = (self.room_size + self.gap_size) * self.num_cols

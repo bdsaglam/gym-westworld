@@ -10,13 +10,12 @@ import math
 import random
 import sys
 
-import gym
-from gym.wrappers import Monitor
-
-import gym_miniworld.envs
 import numpy as np
 import pyglet
 from pyglet.window import key
+
+from gym_miniworld.envs import WestWorld
+from gym_miniworld.envs.westworld import DecoreOption
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--env-name', default='MiniWorld-WestWorld-v0')
@@ -29,8 +28,10 @@ seed = 0
 random.seed(seed)
 np.random.seed(seed)
 
-env = gym.make(args.env_name, seed=seed, num_chars_on_wall=1)
-env = Monitor(env, directory='./data')
+env = WestWorld(seed=seed,
+                decore_option=(DecoreOption.PORTRAIT | DecoreOption.DIGIT | DecoreOption.CHARACTER),
+                num_chars_on_wall=2)
+# env = Monitor(env, directory='./data')
 
 if args.no_time_limit:
     env.max_episode_steps = math.inf
@@ -44,8 +45,9 @@ env.reset()
 # Create the display window
 env.render('pyglet', view=view_mode)
 
+
 def step(action):
-    print('step {}/{}: {}'.format(env.step_count+1, env.max_episode_steps, env.actions(action).name))
+    print('step {}/{}: {}'.format(env.step_count + 1, env.max_episode_steps, env.actions(action).name))
 
     obs, reward, done, info = env.step(action)
 
@@ -57,6 +59,7 @@ def step(action):
         env.reset()
 
     env.render('pyglet', view=view_mode)
+
 
 @env.unwrapped.window.event
 def on_key_press(symbol, modifiers):
@@ -93,17 +96,21 @@ def on_key_press(symbol, modifiers):
     elif symbol == key.ENTER:
         step(env.actions.done)
 
+
 @env.unwrapped.window.event
 def on_key_release(symbol, modifiers):
     pass
+
 
 @env.unwrapped.window.event
 def on_draw():
     env.render('pyglet', view=view_mode)
 
+
 @env.unwrapped.window.event
 def on_close():
     pyglet.app.exit()
+
 
 # Enter main event loop
 pyglet.app.run()

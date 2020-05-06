@@ -13,6 +13,6 @@ setup(
         # 'pybullet>=2.1.0',
     ],
     package_data={
-        'gym_miniworld': ['meshes/*', 'textures/*', 'textures/chars/*'],
+        'gym_miniworld': ['meshes/*', 'textures/*', 'textures/chars/*', 'textures/portraits/*'],
     }
 )

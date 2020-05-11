@@ -5,32 +5,33 @@ import numpy as np
 from PIL import Image
 
 from gym_miniworld.envs import WestWorld
+from gym_miniworld.envs.westworld import DecoreOption
 
 
-def collect_data():
-    root = pathlib.Path('/Users/bdsaglam/westworld-data/validation')
+def collect_data(data_dir, seed, obs_size, num_episodes=1000, timesteps_per_episode=100):
+    folder = data_dir / f'{obs_size}x{obs_size}-s{seed}-dc'
 
-    image_dir = root / 'images'
-    image_dir.mkdir(parents=True, exist_ok=True)
-    pose_dir = root / 'poses'
-    pose_dir.mkdir(parents=True, exist_ok=True)
-
-    seed = 0
     random.seed(seed)
     np.random.seed(seed)
 
     env = WestWorld(
         seed=seed,
-        obs_width=300,
-        obs_height=300,
+        obs_width=obs_size,
+        obs_height=obs_size,
+        decore_option=(DecoreOption.DIGIT | DecoreOption.CHARACTER),
+        num_chars_on_wall=1,
     )
 
+    image_dir = folder / 'images'
+    image_dir.mkdir(parents=True, exist_ok=True)
+    pose_dir = folder / 'poses'
+    pose_dir.mkdir(parents=True, exist_ok=True)
 
     episode = 0
-    while episode < 30:
+    while episode < num_episodes:
         episode += 1
         env.reset()
-        for i in range(10):
+        for i in range(timesteps_per_episode):
             action = env.action_space.sample()
 
             obs, reward, done, info = env.step(action)
@@ -59,10 +60,11 @@ def collect_data():
             if done:
                 break
 
-
-
+    env.close()
     print("finished")
+    return folder
 
 
 if __name__ == '__main__':
-    collect_data()
+    data_dir = pathlib.Path('~/westworld-data')
+    collect_data(data_dir=data_dir, seed=0, obs_size=64)

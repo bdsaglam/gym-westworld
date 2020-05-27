@@ -8,7 +8,12 @@ from gym_miniworld.envs import WestWorld
 from gym_miniworld.envs.westworld import DecoreOption
 
 
-def collect_data(data_dir, seed, obs_size, num_episodes=1000, timesteps_per_episode=100):
+def collect_data(data_dir,
+                 seed,
+                 obs_size,
+                 num_episodes=1000,
+                 timesteps_per_episode=100,
+                 first_episode=0):
     folder = data_dir / f'{obs_size}x{obs_size}-s{seed}-dc'
 
     random.seed(seed)
@@ -27,8 +32,8 @@ def collect_data(data_dir, seed, obs_size, num_episodes=1000, timesteps_per_epis
     pose_dir = folder / 'poses'
     pose_dir.mkdir(parents=True, exist_ok=True)
 
-    episode = 0
-    while episode < num_episodes:
+    episode = first_episode
+    while episode < (first_episode + num_episodes):
         episode += 1
         env.reset()
         for i in range(timesteps_per_episode):
@@ -66,5 +71,6 @@ def collect_data(data_dir, seed, obs_size, num_episodes=1000, timesteps_per_epis
 
 
 if __name__ == '__main__':
-    data_dir = pathlib.Path('~/westworld-data')
-    collect_data(data_dir=data_dir, seed=0, obs_size=64)
+    data_dir = pathlib.Path.home() / 'westworld-data'
+    collect_data(data_dir=data_dir, seed=0, obs_size=128,
+                 num_episodes=1000, timesteps_per_episode=100)

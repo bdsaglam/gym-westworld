@@ -6,7 +6,7 @@ from gym import spaces
 from gym.envs.registration import EnvSpec
 
 from gym_miniworld.entity import Box, ImageFrame
-from gym_miniworld.miniworld import MiniWorldEnv, TextFrame, MeshEnt
+from gym_miniworld.miniworld import MiniWorldEnv, TextFrame, MeshEnt, DEFAULT_PARAMS
 from gym_miniworld.utils import get_portrait_names
 
 TOP = 'T'
@@ -43,6 +43,8 @@ class WestWorld(MiniWorldEnv):
             invert_chars=True,
             **kwargs
     ):
+        params = DEFAULT_PARAMS
+        params.set('turn_step', 5, 3, 7)
 
         self.num_rows = 6
         self.num_cols = 6
@@ -65,6 +67,7 @@ class WestWorld(MiniWorldEnv):
 
         super().__init__(
             seed=seed,
+            params=params,
             **kwargs
         )
 

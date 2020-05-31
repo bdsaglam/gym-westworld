@@ -298,7 +298,7 @@ class WestWorld(MiniWorldEnv):
         y = room.wall_height / 2
         for wall in walls:
             entity = None
-            if len(self.image_decores) > 0 and self.rand.bool():
+            if len(self.image_decores) > 0:
                 height = self.wall_decore_height or room.wall_height
                 entity = ImageFrame(pos=(0, 0),
                                     dir=0,

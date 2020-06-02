@@ -79,7 +79,7 @@ class WestWorld(MiniWorldEnv):
                             kwargs=None)
 
         # Allow only the movement actions
-        self.action_space = spaces.Discrete(self.actions.move_forward + 1)
+        self.action_space = spaces.Discrete(self.actions.move_back + 1)
 
 
 

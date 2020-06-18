@@ -12,10 +12,11 @@ import sys
 
 import numpy as np
 import pyglet
+from gym_miniworld.envs.westworld import DecoreOption
 from pyglet.window import key
 
 from gym_miniworld.envs import WestWorld
-from gym_miniworld.envs.westworld import DecoreOption
+from gym_miniworld.envs.oneroom import OneRoom
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--env-name', default='MiniWorld-WestWorld-v0')
@@ -29,10 +30,15 @@ random.seed(seed)
 np.random.seed(seed)
 
 env = WestWorld(seed=seed,
+                room_size=3,
+                gap_size=0,
                 obs_width=64,
                 obs_height=64,
                 decore_option=DecoreOption.PORTRAIT,
                 num_chars_on_wall=1)
+
+# env = OneRoom(size=30, max_episode_steps=100, have_goal=False)
+
 # env = Monitor(env, directory='./data')
 
 if args.no_time_limit:

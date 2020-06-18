@@ -35,16 +35,18 @@ class WestWorld(MiniWorldEnv):
     def __init__(
             self,
             seed=None,
-            room_size=3,
-            gap_size=0.25,
+            room_size=2,
+            gap_size=0.0,
             decore_option: DecoreOption = DecoreOption.NONE,
             wall_decore_height=None,
             num_chars_on_wall=1,
             invert_chars=True,
+            non_terminate=False,
             **kwargs
     ):
         params = DEFAULT_PARAMS
         params.set('turn_step', 5, 3, 7)
+        params.set('forward_step', 0.2, 0.15, 0.25)
 
         self.num_rows = 6
         self.num_cols = 6
@@ -54,6 +56,11 @@ class WestWorld(MiniWorldEnv):
         self.wall_decore_height = wall_decore_height
         self.num_chars_on_wall = num_chars_on_wall
         self.invert_chars = invert_chars
+        self.non_terminate = non_terminate
+
+        self.height = self.num_rows * room_size + (self.num_rows - 1) * gap_size
+        self.width = self.num_cols * room_size + (self.num_cols - 1) * gap_size
+
         self.M = None
 
         # Decoration stuff
@@ -81,8 +88,6 @@ class WestWorld(MiniWorldEnv):
         # Allow only the movement actions
         self.action_space = spaces.Discrete(self.actions.move_back + 1)
 
-
-
     def _reset(self):
         self.place_agent()
 
@@ -96,7 +101,7 @@ class WestWorld(MiniWorldEnv):
     def step(self, action):
         obs, reward, done, info = super().step(action)
 
-        if self.near(self.box):
+        if not self.non_terminate and self.near(self.box):
             reward += self._reward()
             done = True
 
@@ -305,7 +310,7 @@ class WestWorld(MiniWorldEnv):
                 height = self.wall_decore_height or room.wall_height
                 entity = ImageFrame(pos=(0, 0),
                                     dir=0,
-                                   tex_name='portraits/' + self.rand.choice(PORTRAIT_NAMES),
+                                    tex_name='portraits/' + self.rand.choice(PORTRAIT_NAMES),
                                     width=height)
             elif len(self.text_decores) > 0:
                 height = self.wall_decore_height or room.wall_height / self.num_chars_on_wall
